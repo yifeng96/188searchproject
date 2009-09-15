@@ -81,9 +81,8 @@ def depthFirstSearch(problem):
   seenAlready[state[0]] = "1"
   path = []
 
-  if (problem.isGoalState(startState)) {
+  if (problem.isGoalState(startState)):
     return []
-  }
   
   while(1):    
     children = problem.getSuccessors(state[0]);
@@ -114,9 +113,8 @@ def breadthFirstSearch(problem):
   seenAlready[state[0]] = "1"
   path = []
 
-  if (problem.isGoalState(startState)) {
+  if (problem.isGoalState(startState)):
     return []
-  }
   
   while(1):    
     children = problem.getSuccessors(state[0]);
@@ -124,7 +122,6 @@ def breadthFirstSearch(problem):
     if (children):
       for item in children:
         if (item[0] not in seenAlready):
-          print "not seen"
           tmpPath = list(state[3]);
           tmpPath.append(item[1])
           item = list(item);
@@ -152,9 +149,9 @@ def uniformCostSearch(problem):
   seenAlready[state[0]] = "1"
   path = []
 
-  if (problem.isGoalState(startState)) {
+  if (problem.isGoalState(startState)):
     return []
-  }
+  
   while(1):    
     children = problem.getSuccessors(state[0]);
     
@@ -196,9 +193,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
   seenAlready[state[0]] = "1"
   path = []
 
-  if (problem.isGoalState(startState)) {
+  if (problem.isGoalState(startState)):
     return []
-  }
+  
   
   while(1):    
     children = problem.getSuccessors(state[0]);
