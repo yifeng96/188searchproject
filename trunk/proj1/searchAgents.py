@@ -476,35 +476,30 @@ def foodHeuristic(state, problem):
   """
   
   position, foodGrid = state
+   
+  mh = [];
+  for ele in foodGrid.asList():
+    mh.append(manhattanDistance(position,ele))
+  mhmax = 0
+  if (len(mh) == 0):
+    mhmax = 0;
+  else:
+    mhmax = max(mh)
   
-
+  mh = []
+  maxx = 0
+  maxy = 0
+  minx = 1000
+  miny = 1000
+  for ele in foodGrid.asList():
+    maxx = max(maxx,ele[0])
+    minx = min(minx,ele[0])
+    maxy = max(maxy,ele[1])
+    miny = min(miny,ele[1])
+    
+  # print (maxx,maxy), (minx,miny)
   
-  
-  return 0
-  # 
-  # mh = [];
-  # for ele in foodGrid.asList():
-  #   mh.append(manhattanDistance(position,ele))
-  # mhmax = 0
-  # if (len(mh) == 0):
-  #   mhmax = 0;
-  # else:
-  #   mhmax = max(mh)
-  # 
-  # mh = []
-  # maxx = 0
-  # maxy = 0
-  # minx = 1000
-  # miny = 1000
-  # for ele in foodGrid.asList():
-  #   maxx = max(maxx,ele[0])
-  #   minx = min(minx,ele[0])
-  #   maxy = max(maxy,ele[1])
-  #   miny = min(miny,ele[1])
-  #   
-  # # print (maxx,maxy), (minx,miny)
-  # 
-  # return max(mhmax,manhattanDistance((maxx,maxy),(minx,miny)))
+  return max(mhmax,manhattanDistance((maxx,maxy),(minx,miny)))
   
 def manhattanDistance( xy1, xy2 ):
   "Returns the Manhattan distance between points xy1 and xy2"
