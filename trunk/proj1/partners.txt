@@ -1,0 +1,2 @@
+cs188-dd,rrdhaimade@berkeley.edu,Rohan Dhaimade
+cs188-dk,armen_khodaverdian@berkeley.edu,Armen Khodaverdian
