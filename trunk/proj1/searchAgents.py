@@ -449,57 +449,57 @@ class AStarFoodSearchAgent(SearchAgent):
     self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
     self.searchType = FoodSearchProblem
 
-def foodHeuristic(state, problem):
-  """
-  Your heuristic for the FoodSearchProblem goes here.
+  def foodHeuristic(state, problem):
+    """
+    Your heuristic for the FoodSearchProblem goes here.
   
-  This heuristic must be consistent to ensure correctness.  First, try to come up
-  with an admissible heuristic; almost all admissible heuristics will be consistent
-  as well.
+    This heuristic must be consistent to ensure correctness.  First, try to come up
+    with an admissible heuristic; almost all admissible heuristics will be consistent
+    as well.
   
-  If using A* ever finds a solution that is worse uniform cost search finds,
-  your heuristic is *not* consistent, and probably not admissible!  On the other hand,
-  inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
+    If using A* ever finds a solution that is worse uniform cost search finds,
+    your heuristic is *not* consistent, and probably not admissible!  On the other hand,
+    inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
   
-  The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a 
-  Grid (see game.py) of either True or False. You can call foodGrid.asList()
-  to get a list of food coordinates instead.
+    The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a 
+    Grid (see game.py) of either True or False. You can call foodGrid.asList()
+    to get a list of food coordinates instead.
   
-  If you want access to info like walls, capsules, etc., you can query the problem.
-  For example, problem.walls gives you a Grid of where the walls are.
+    If you want access to info like walls, capsules, etc., you can query the problem.
+    For example, problem.walls gives you a Grid of where the walls are.
   
-  If you want to *store* information to be reused in other calls to the heuristic,
-  there is a dictionary called problem.heuristicInfo that you can use. For example,
-  if you only want to count the walls once and store that value, try:
-    problem.heuristicInfo['wallCount'] = problem.walls.count()
-  Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
-  """
+    If you want to *store* information to be reused in other calls to the heuristic,
+    there is a dictionary called problem.heuristicInfo that you can use. For example,
+    if you only want to count the walls once and store that value, try:
+      problem.heuristicInfo['wallCount'] = problem.walls.count()
+    Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
+    """
   
-  position, foodGrid = state
+    position, foodGrid = state
    
-  mh = [];
-  for ele in foodGrid.asList():
-    mh.append(manhattanDistance(position,ele))
-  mhmax = 0
-  if (len(mh) == 0):
-    mhmax = 0;
-  else:
-    mhmax = max(mh)
+    mh = [];
+    for ele in foodGrid.asList():
+      mh.append(manhattanDistance(position,ele))
+    mhmax = 0
+    if (len(mh) == 0):
+      mhmax = 0;
+    else:
+      mhmax = max(mh)
   
-  mh = []
-  maxx = 0
-  maxy = 0
-  minx = 1000
-  miny = 1000
-  for ele in foodGrid.asList():
-    maxx = max(maxx,ele[0])
-    minx = min(minx,ele[0])
-    maxy = max(maxy,ele[1])
-    miny = min(miny,ele[1])
+    mh = []
+    maxx = 0
+    maxy = 0
+    minx = 1000
+    miny = 1000
+    for ele in foodGrid.asList():
+      maxx = max(maxx,ele[0])
+      minx = min(minx,ele[0])
+      maxy = max(maxy,ele[1])
+      miny = min(miny,ele[1])
     
-  # print (maxx,maxy), (minx,miny)
+    # print (maxx,maxy), (minx,miny)
   
-  return max(mhmax,manhattanDistance((maxx,maxy),(minx,miny)))
+    return max(mhmax,manhattanDistance((maxx,maxy),(minx,miny)))
   
 def manhattanDistance( xy1, xy2 ):
   "Returns the Manhattan distance between points xy1 and xy2"
