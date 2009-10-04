@@ -91,9 +91,11 @@ class QLearningAgent(ReinforcementAgent):
     """  
     # Pick Action
     legalActions = self.getLegalActions(state)
-    action = None
+    if len(legalActions) == 0:
+      return None
     # do some extra stuff involving episolen here
-    
+    if util.flipCoin(self.epsilon):
+      return random.choice(legalActions)
     #else do this
     return self.getPolicy(state)
   
@@ -108,7 +110,7 @@ class QLearningAgent(ReinforcementAgent):
     """
     #possibly do this?
     sample = reward + (self.gamma * self.getValue(nextState))
-    newValue = ((1- self.alpha)*self.getQValue(state,action))+self.alpha*sample
+    newValue = ((1- self.alpha)*self.getQValue(state,action))+(self.alpha*sample)
     self.qValues[(state,action)] = newValue
     
 class PacmanQAgent(QLearningAgent):
