@@ -48,6 +48,13 @@ def question3e():
 def question6():
   answerEpsilon = None
   answerLearningRate = None
+  return 'NOT POSSIBLE' # No matter what learning rate (alpha) is, you need to have random actions
+  # "take you" five tiles to the East consecutively. If you have epsilon = 1 (i.e ignoring learning),
+  # then the probability of that is VERY small (0.25 * (0.25 * (0.25 * (0.25 * (0.25))))) = 0.00098,
+  # i.e 0.098% chance. If you throw learning into the fray, then the agent will ALWAYS want to move
+  # West, because it's reward is guaranteed to be 1, so the agent would have to rely on its epsilon
+  # to generate enough "randomness" to throw it to the East five tiles. So, the best case probability
+  # is when epsilon = 1, i.e 0.098%.  
   return answerEpsilon, answerLearningRate
   # If not possible, return 'NOT POSSIBLE'
   # return not possible
