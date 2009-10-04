@@ -23,6 +23,7 @@ class ValueIterationAgent(ValueEstimationAgent):
           mdp.getTransitionStatesAndProbs(state, action)
           mdp.getReward(state, action, nextState)
     """
+    print "hello"
     self.mdp = mdp
     self.discount = discount
     self.iterations = iterations
