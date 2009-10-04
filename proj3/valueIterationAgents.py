@@ -23,42 +23,38 @@ class ValueIterationAgent(ValueEstimationAgent):
           mdp.getTransitionStatesAndProbs(state, action)
           mdp.getReward(state, action, nextState)
     """
-    print "hello"
     self.mdp = mdp
     self.discount = discount
     self.iterations = iterations
     self.values = util.Counter() # A Counter is a dict with default 0
+    self.tmpValues = util.Counter();
     iterationsCompleted = 0
     startState = mdp.getStartState();
-    self.values[startState] = 0
-    
     while (iterationsCompleted < iterations):
       for state in mdp.getStates():
-        if (state == mdp.getStartState):
-          print "start state"
         self.computeValue(mdp,state,discount)
-      
-      iterationsCompleted = iterations
-      
+      for key in self.tmpValues:
+        self.values[key] = self.tmpValues[key]
+      iterationsCompleted += 1
     
-    print "final values is ", self.values
-    "*** YOUR CODE HERE ***"
+    
+    for key in sorted(self.values):
+      print "key is ", key, " and value is  ", self.values[key] 
     
   def computeValue(self,mdp,state,discount):
-    
     actions = mdp.getPossibleActions(state)
-    valueList = []    
-    print "computing value for state", state
+    valueList = []
     if (mdp.isTerminal(state)):
-      return self.getValue(state)
+      return
     for action in actions:
       transitions = mdp.getTransitionStatesAndProbs(state,action)
+      value = 0
       for transition in transitions:
-        if state == transition[0]:
-          break;
-        print "new state is ", transition[0], "and old state is ", state
-        value = transition[1] * (mdp.getReward(state,action,transition[0])+discount*(self.getValue(state)))
-
+        subValue = float(transition[1]) * (float(mdp.getReward(state,action,transition[0]))+(float(discount)*(float(self.getValue(transition[0])))))
+        value += subValue
+      valueList.append(value)
+    
+    self.tmpValues[state] = max(valueList)
     
   def getValue(self, state):
     """
@@ -75,8 +71,7 @@ class ValueIterationAgent(ValueEstimationAgent):
       necessarily create this quantity and you may have
       to derive it on the fly.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
 
   def getPolicy(self, state):
     """
