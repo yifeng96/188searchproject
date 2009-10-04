@@ -37,10 +37,6 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values[key] = self.tmpValues[key]
       iterationsCompleted += 1
     
-    
-    for key in sorted(self.values):
-      print "key is ", key, " and value is  ", self.values[key] 
-    
   def computeValue(self,mdp,state,discount):
     actions = mdp.getPossibleActions(state)
     valueList = []
@@ -71,7 +67,12 @@ class ValueIterationAgent(ValueEstimationAgent):
       necessarily create this quantity and you may have
       to derive it on the fly.
     """
-    
+    transitions = self.mdp.getTransitionStatesAndProbs(state,action)
+    value = 0
+    for transition in transitions:
+      subValue = float(transition[1]) * (float(self.mdp.getReward(state,action,transition[0]))+(float(self.discount)*(float(self.getValue(transition[0])))))
+      value += subValue
+    return value;
 
   def getPolicy(self, state):
     """
@@ -80,12 +81,7 @@ class ValueIterationAgent(ValueEstimationAgent):
       You may break ties any way you see fit.  Note that if
       there are no legal actions, which is the case at the
       terminal state, you should return None.
-    """
-    # util.counter 
-    # your gonna put all in Q*(s,a)
-    # hash[action] = Q*(s,action)
-    # return the argmax of that
-    
+    """    
     legalActions = self.mdp.getPossibleActions(state)
     if len(legalActions) == 0: # return None
       return None
@@ -93,8 +89,6 @@ class ValueIterationAgent(ValueEstimationAgent):
     for action in legalActions:
       myDict[action] = self.getQValue(state, action)
     return myDict.argMax()
-      
-    
 
   def getAction(self, state):
     "Returns the policy at the state (no exploration)."
