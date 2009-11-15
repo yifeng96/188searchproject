@@ -159,7 +159,6 @@ class ApproximateQAgent(PacmanQAgent):
     # print self.featExtractor.getFeatures()
     # You might want to initialize weights here.
     self.weightDict = util.Counter()
-  
     
   def getQValue(self, state, action):
     """
@@ -167,6 +166,7 @@ class ApproximateQAgent(PacmanQAgent):
       where * is the dotProduct operator
     """
     "*** YOUR CODE HERE ***"
+    
     return self.featExtractor.getFeatures(state,action)*self.weightDict
     
   def update(self, state, action, nextState, reward):

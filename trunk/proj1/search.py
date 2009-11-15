@@ -204,6 +204,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
       for item in children:
         if (item[0] not in seenAlready):
           tmpPath = list(state[3]);
+          print tmpPath
           tmpPath.append(item[1])
           item = list(item);
           item.append(tmpPath)
