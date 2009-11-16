@@ -83,7 +83,26 @@ class GreedyBustersAgent(BustersAgent):
      
     You may remove Directions.STOP from the list of available actions.
     """
+    
+    # print dir(self.inferenceModules[0])
+    mostLikelyGhostPositions = util.Counter();
+    for i in range(0,len(gameState.getLivingGhosts())):
+      if (gameState.getLivingGhosts()[i]):
+         mostLikelyGhostPositions[i] = self.inferenceModules[i-1].getBeliefDistribution().argMax()
+    
+    minDist = 100000000
+    minIndex = 1
     pacmanPosition = gameState.getPacmanPosition()
+    for ghostIndex in mostLikelyGhostPositions:
+      dist = self.distancer.getDistance(pacmanPosition,mostLikelyGhostPositions[ghostIndex])
+      if (min(dist,minDist) != minDist):
+        minDist = min(dist,minDist);
+        minIndex = ghostIndex;
+    # print minDist, minIndex;
+
     legal = [a for a in gameState.getLegalPacmanActions() if a != Directions.STOP]
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    legalMoves = util.Counter();
+    minGhostPos = mostLikelyGhostPositions[minIndex]
+    for action in legal:
+       legalMoves[action] = -1*self.distancer.getDistance(minGhostPos,Actions.getSuccessor(pacmanPosition,action))
+    return legalMoves.argMax()

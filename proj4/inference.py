@@ -102,16 +102,13 @@ class ExactInference(InferenceModule):
     emissionModel = busters.getObservationDistribution(noisyDistance)
     pacmanPosition = gameState.getPacmanPosition()
     
-    "*** YOUR CODE HERE ***"
     # Replace this code with a correct observation update
     allPossible = util.Counter()
     for p in self.legalPositions:
       trueDistance = util.manhattanDistance(p, pacmanPosition)
-      if emissionModel[trueDistance] > 0: allPossible[p] = 1.0
-    allPossible.normalize()
+      self.beliefs[p] = self.beliefs[p] * emissionModel[trueDistance]
+    self.beliefs.normalize()
         
-    "*** YOUR CODE HERE ***"
-    self.beliefs = allPossible
     
   def elapseTime(self, gameState):
     """
@@ -131,8 +128,15 @@ class ExactInference(InferenceModule):
           will move to from the provided gameState.  The ghost must be placed
           in the gameState with a call to self.setGhostPosition above.
     """
-    
-    "*** YOUR CODE HERE ***"
+
+    ghostPositions = util.Counter()
+    for p in self.legalPositions:
+      self.setGhostPosition(gameState,p)
+      for key in self.getPositionDistribution(gameState):
+        ghostPositions[p] += self.beliefs[key] * self.getPositionDistribution(gameState)[p]
+      
+    for key in ghostPositions:
+      self.beliefs[key] = ghostPositions[key]
 
   def getBeliefDistribution(self):
     return self.beliefs
