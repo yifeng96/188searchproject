@@ -153,27 +153,59 @@ class ParticleFilter(InferenceModule):
   def initializeUniformly(self, gameState, numParticles=300):
     "Initializes a list of particles."
     self.numParticles = numParticles
-    "*** YOUR CODE HERE ***"
+    self.legalPositions = [p for p in gameState.getWalls().asList(False) if p[1] > 1]
+    self.particles = []
+    position_index = 0
+    for i in range(self.numParticles):
+      if position_index == len(self.legalPositions):
+        position_index = 0
+      self.particles.append(self.legalPositions[position_index])
+      position_index += 1
+
   
   def observe(self, observation, gameState):
     "Update beliefs based on the given distance observation."
     emissionModel = busters.getObservationDistribution(observation)
     pacmanPosition = gameState.getPacmanPosition()
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    particle_weights = util.Counter()
+    for particle in self.particles:
+      trueDist = manhattanDistance(pacmanPosition, particle)
+      weight = (float) (emissionModel[trueDist])
+      particle_weights[particle] = weight
+    
+    newParticles = []
+    
+    for n in range(len(self.particles)):
+      resample = util.sampleFromCounter(particle_weights)
+      newParticles.append(resample)
+    
+    sizeOfBoard = (float) (len(self.legalPositions))
+    for position in self.legalPositions:
+      if len(self.beliefs.values()) != 0:
+        self.beliefs.pop(position)
+      self.beliefs[position] = (float) ((float) (newParticles.count(position)) / sizeOfBoard)
+
     
   def elapseTime(self, gameState):
     "Update beliefs for a time step elapsing."
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    for i in range(len(self.particles)):
+      self.setGhostPosition(gameState, self.particles[i])
+      updatedParticle = util.sample(self.getPositionDistribution(gameState))
+      self.particles.pop(i)
+      self.particles.append(updatedParticle)
+    
+    sizeOfBoard = (float) (len(self.legalPositions))
+    for position in self.legalPositions:
+      if len(self.beliefs.values()) != 0:
+        self.beliefs.pop(position)
+      self.beliefs[position] = (float) ((float) (self.particles.count(position)) / sizeOfBoard)
 
   def getBeliefDistribution(self):
     """
     Return the agent's current belief state, a distribution over
     ghost locations conditioned on all evidence and time passage.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return self.beliefs
 
 class MarginalInference(InferenceModule):
   "A wrapper around the JointInference module that returns marginal beliefs about ghosts."
@@ -241,9 +273,25 @@ class JointParticleFilter:
     newParticles = []
     for oldParticle in self.particles:
       newParticle = list(oldParticle) # A list of ghost positions
-      "*** YOUR CODE HERE ***"
+      #print "Before: ", newParticle
+      #for ghostIndex in range(len(self.ghostAgents) + 1):
+      for ghostIndex in range(1,len(gameState.getLivingGhosts())):
+        if (gameState.getLivingGhosts()[ghostIndex] == True):
+          setGhostPositions(gameState, newParticle)
+          updatedParticle = util.sample(getPositionDistributionForGhost(gameState, ghostIndex, self.ghostAgents[ghostIndex - 1]))
+          newParticle.pop(ghostIndex - 1)
+          newParticle.insert(ghostIndex - 1, updatedParticle)
+          
+      #for ghostIndex in range(len(gameState.getLivingGhosts())-1,0,-1):
+      #  gameState.getLivingGhosts()[ghostIndex]
+      #  if (gameState.getLivingGhosts()[ghostIndex] == False):
+      #    print "I am removing ghost index ", ghostIndex
+      #    newParticle.pop(ghostIndex-1);
+      
       newParticles.append(tuple(newParticle))
+    #print newParticles
     self.particles = newParticles
+
   
   def observeState(self, gameState):
     """
