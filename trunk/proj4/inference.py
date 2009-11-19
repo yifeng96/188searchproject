@@ -137,7 +137,9 @@ class ExactInference(InferenceModule):
       
     for key in ghostPositions:
       self.beliefs[key] = ghostPositions[key]
-
+    
+    self.beliefs.normalize()
+    
   def getBeliefDistribution(self):
     return self.beliefs
 
@@ -189,7 +191,7 @@ class ParticleFilter(InferenceModule):
       if len(self.beliefs.values()) != 0:
         self.beliefs.pop(position)
       self.beliefs[position] = (float) ((float) (newParticles.count(position)) / sizeOfBoard)
-
+    self.beliefs.normalize()
     
   def elapseTime(self, gameState):
     "Update beliefs for a time step elapsing."
@@ -204,6 +206,7 @@ class ParticleFilter(InferenceModule):
       if len(self.beliefs.values()) != 0:
         self.beliefs.pop(position)
       self.beliefs[position] = (float) ((float) (self.particles.count(position)) / sizeOfBoard)
+    self.beliefs.normalize()
 
   def getBeliefDistribution(self):
     """
