@@ -84,7 +84,6 @@ class GreedyBustersAgent(BustersAgent):
     You may remove Directions.STOP from the list of available actions.
     """
     
-    # print dir(self.inferenceModules[0])
     mostLikelyGhostPositions = util.Counter();
     for i in range(0,len(gameState.getLivingGhosts())):
       if (gameState.getLivingGhosts()[i]):
@@ -98,7 +97,6 @@ class GreedyBustersAgent(BustersAgent):
       if (min(dist,minDist) != minDist):
         minDist = min(dist,minDist);
         minIndex = ghostIndex;
-    # print minDist, minIndex;
 
     legal = [a for a in gameState.getLegalPacmanActions() if a != Directions.STOP]
     legalMoves = util.Counter();
