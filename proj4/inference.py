@@ -172,7 +172,7 @@ class ParticleFilter(InferenceModule):
       trueDist = manhattanDistance(pacmanPosition, particle)
       weight = (float) (emissionModel[trueDist])
       particle_weights[particle] = weight
-    
+        
     newParticles = []
     
     for n in range(len(self.particles)):
@@ -282,14 +282,7 @@ class JointParticleFilter:
           newParticle.pop(ghostIndex - 1)
           newParticle.insert(ghostIndex - 1, updatedParticle)
           
-      #for ghostIndex in range(len(gameState.getLivingGhosts())-1,0,-1):
-      #  gameState.getLivingGhosts()[ghostIndex]
-      #  if (gameState.getLivingGhosts()[ghostIndex] == False):
-      #    print "I am removing ghost index ", ghostIndex
-      #    newParticle.pop(ghostIndex-1);
-      
       newParticles.append(tuple(newParticle))
-    #print newParticles
     self.particles = newParticles
 
   
@@ -307,9 +300,50 @@ class JointParticleFilter:
     """ 
     pacmanPosition = gameState.getPacmanPosition()
     noisyDistances = gameState.getNoisyGhostDistances()
-    if len(noisyDistances) < self.numGhosts: return
     emissionModels = [busters.getObservationDistribution(dist) for dist in noisyDistances]
+    
+    particleWeightsCounter = util.Counter()
+    if (len(emissionModels) != 0):
+      for particleArray in self.particles:
+          particleArray = list(particleArray)
+          particle_weights = util.Counter()
+          for ghostIndex in range(self.numGhosts):
+            if (noisyDistances[ghostIndex] == 999):
+              particleArray[ghostIndex] = (2 * (ghostIndex+1) - 1, 1)
+            else:
+              trueDist = util.manhattanDistance(pacmanPosition, particleArray[ghostIndex])
+              weight = (float) (emissionModels[ghostIndex][trueDist])
+              particle_weights[ghostIndex] = weight
+          weightProduct = 1
+          for particle in particle_weights:
+            weightProduct *= particle_weights[particle]
+          particleArray = tuple(particleArray)
+          particleWeightsCounter[particleArray] = weightProduct
+      
+      if (sum(particleWeightsCounter.values()) == 0):
+        self.initializeParticles()
+        return;
 
+      newParticles = []
+      for n in range(len(self.particles)):
+        resample = util.sampleFromCounter(particleWeightsCounter)
+        newParticles.append(resample)
+      
+      self.particles = newParticles;
+    
+    
+    # for ghostIndex in range(len(noisyDistances)):
+    #   particle_weights = util.Counter()
+    #   particle_weightsArray.push(particle_weights)
+    #   for particleArray in self.particles:
+    #     trueDist = util.manhattanDistance(pacmanPosition, particleArray[ghostIndex])
+    #     weight = (float) (emissionModel[trueDist])
+    #     particle_weights[particleArray[ghostIndex]] = weight
+    #     
+    #   if noisyDistances[index] == 999:
+    #     
+    #     setGhostPositions(gameState)
+    # print emissionModels
     "*** YOUR CODE HERE ***"
   
   def getBeliefDistribution(self):
