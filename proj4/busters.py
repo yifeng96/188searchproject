@@ -478,8 +478,19 @@ def readCommand( argv ):
   pacman = pacmanType(**agentOpts) # Instantiate Pacman with agentArgs
   args['pacman'] = pacman
         
-  import graphicsDisplay
-  args['display'] = graphicsDisplay.FirstPersonPacmanGraphics(options.zoom, \
+  # Choose a display format
+  if options.quietGraphics:
+    class NullGraphics:
+      def initialize(self, state, isBlue = False): pass
+      def update(self, state):                     pass
+      def pause(self):                             pass
+      def draw(self, state):                       print state
+      def finish(self):                            pass
+      def updateDistributions(self, beliefs):      pass
+    args['display'] = NullGraphics()
+  else:
+    import graphicsDisplay
+    args['display'] = graphicsDisplay.FirstPersonPacmanGraphics(options.zoom, \
                                                                 options.showGhosts, \
                                                                 frameTime = options.frameTime)
   args['numGames'] = options.numGames

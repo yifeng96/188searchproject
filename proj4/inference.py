@@ -137,9 +137,9 @@ class ExactInference(InferenceModule):
       
     for key in ghostPositions:
       self.beliefs[key] = ghostPositions[key]
-    
     self.beliefs.normalize()
-    
+
+
   def getBeliefDistribution(self):
     return self.beliefs
 
@@ -152,7 +152,7 @@ class ParticleFilter(InferenceModule):
   samples a key from a Counter by treating its values as probabilities.
   """
   
-  def initializeUniformly(self, gameState, numParticles=300):
+  def initializeUniformly(self, gameState, numParticles=100):
     "Initializes a list of particles."
     self.numParticles = numParticles
     self.legalPositions = [p for p in gameState.getWalls().asList(False) if p[1] > 1]
@@ -161,13 +161,7 @@ class ParticleFilter(InferenceModule):
     
     for i in range(self.numParticles):
       self.particles.append(random.choice(self.legalPositions))
-      
-    #position_index = 0
-    #for i in range(self.numParticles):
-    #  if position_index == len(self.legalPositions):
-    #    position_index = 0
-    #  self.particles.append(self.legalPositions[position_index])
-    #  position_index += 1
+    
 
   
   def observe(self, observation, gameState):
@@ -175,45 +169,56 @@ class ParticleFilter(InferenceModule):
     emissionModel = busters.getObservationDistribution(observation)
     pacmanPosition = gameState.getPacmanPosition()
     particle_weights = util.Counter()
-    for particle in self.particles:
-      trueDist = util.manhattanDistance(pacmanPosition, particle)
-      weight = (float) (emissionModel[trueDist])
-      particle_weights[particle] = weight
-        
-    newParticles = []
+    if (gameState.getLivingGhosts()[self.index]):
+      keepParticles = False
+      for particle in self.particles:
+        trueDist = util.manhattanDistance(pacmanPosition, particle)
+        weight = emissionModel[trueDist]
+        particle_weights[particle] += weight
+        keepParticles |= weight > 0
+      
+      # print "ghost index is ", self.index, "and the paticle weight is " , particle_weights
+      if (keepParticles):
+        particle_weights.normalize()
+        newParticles = []
+        for n in range(self.numParticles):
+          resample = util.sampleFromCounter(particle_weights)
+          newParticles.append(resample)
+        self.particles = newParticles
+      else:
+        self.initializeUniformly(gameState);
     
-    for n in range(len(self.particles)):
-      resample = util.sampleFromCounter(particle_weights)
-      newParticles.append(resample)
-    
-    sizeOfBoard = (float) (len(self.legalPositions))
-    for position in self.legalPositions:
-      if len(self.beliefs.values()) != 0:
-        self.beliefs.pop(position)
-      self.beliefs[position] = (float) ((float) (newParticles.count(position)) / sizeOfBoard)
-    self.beliefs.normalize()
+  
     
   def elapseTime(self, gameState):
     "Update beliefs for a time step elapsing."
-    for i in range(len(self.particles)):
-      self.setGhostPosition(gameState, self.particles[i])
-      updatedParticle = util.sample(self.getPositionDistribution(gameState))
-      self.particles.pop(i)
-      self.particles.append(updatedParticle)
-    
-    sizeOfBoard = (float) (len(self.legalPositions))
-    for position in self.legalPositions:
-      if len(self.beliefs.values()) != 0:
-        self.beliefs.pop(position)
-      self.beliefs[position] = (float) ((float) (self.particles.count(position)) / sizeOfBoard)
-    self.beliefs.normalize()
+    # self.particles = [util.sample(self.getPositionDistribution(self.setGhostPosition(gameState, particle))) for particle in self.particles]
+    newParticles = []
+    if (gameState.getLivingGhosts()[self.index]):
+      for i in range(self.numParticles):
+        self.setGhostPosition(gameState, self.particles[i])
+        updatedParticle = util.sample(self.getPositionDistribution(gameState))
+        newParticles.append(updatedParticle)
+      self.particles = newParticles;
+    # 
+    # sizeOfBoard = (float) (len(self.legalPositions))
+    # tmpBeliefs = util.Counter()
+    # for position in self.legalPositions:
+    #   tmpBeliefs[position] = (float) ((float) (self.particles.count(position)) / sizeOfBoard)
+    # tmpBeliefs.normalize();
+    # self.beliefs = tmpBeliefs;
 
   def getBeliefDistribution(self):
     """
     Return the agent's current belief state, a distribution over
     ghost locations conditioned on all evidence and time passage.
     """
-    return self.beliefs
+    probability = 1.0 / self.numParticles
+    beliefs = util.Counter()
+    for particle in self.particles:
+      beliefs[particle] += probability
+    beliefs.normalize()
+    return beliefs
 
 class MarginalInference(InferenceModule):
   "A wrapper around the JointInference module that returns marginal beliefs about ghosts."
