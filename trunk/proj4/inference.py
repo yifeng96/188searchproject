@@ -153,7 +153,7 @@ class ParticleFilter(InferenceModule):
   samples a key from a Counter by treating its values as probabilities.
   """
   
-  def initializeUniformly(self, gameState, numParticles=100):
+  def initializeUniformly(self, gameState, numParticles=300):
     "Initializes a list of particles."
     self.numParticles = numParticles
     self.legalPositions = [p for p in gameState.getWalls().asList(False) if p[1] > 1]
