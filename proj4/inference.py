@@ -131,13 +131,13 @@ class ExactInference(InferenceModule):
     """
 
     ghostPositions = util.Counter()
-    for p in self.legalPositions:
-      self.setGhostPosition(gameState,p)
-      for key in self.getPositionDistribution(gameState):
-        ghostPositions[p] += self.beliefs[key] * self.getPositionDistribution(gameState)[p]
+    for legalPos in self.legalPositions:
+      tmpState = self.setGhostPosition(gameState,legalPos)
+      for pos in self.getPositionDistribution(tmpState):
+        ghostPositions[p] += self.beliefs[pos] * self.getPositionDistribution(tmpState)[legalPos]
       
-    for key in ghostPositions:
-      self.beliefs[key] = ghostPositions[key]
+    for pos in ghostPositions:
+      self.beliefs[pos] = ghostPositions[pos]
     self.beliefs.normalize()
 
 
@@ -197,12 +197,11 @@ class ParticleFilter(InferenceModule):
     
   def elapseTime(self, gameState):
     "Update beliefs for a time step elapsing."
-    # self.particles = [util.sample(self.getPositionDistribution(self.setGhostPosition(gameState, particle))) for particle in self.particles]
     newParticles = []
     if (gameState.getLivingGhosts()[self.index]):
       for i in range(self.numParticles):
-        self.setGhostPosition(gameState, self.particles[i])
-        updatedParticle = util.sample(self.getPositionDistribution(gameState))
+        tmpState = self.setGhostPosition(gameState, self.particles[i])
+        updatedParticle = util.sample(self.getPositionDistribution(tmpState))
         newParticles.append(updatedParticle)
       self.particles = newParticles;
     # 
@@ -293,8 +292,8 @@ class JointParticleFilter:
       newParticle = list(oldParticle) # A list of ghost positions
       for ghostIndex in range(1,len(gameState.getLivingGhosts())):
         if (gameState.getLivingGhosts()[ghostIndex] == True):
-          setGhostPositions(gameState, newParticle)
-          updatedParticle = util.sample(getPositionDistributionForGhost(gameState, ghostIndex, self.ghostAgents[ghostIndex - 1]))
+          tmpState = setGhostPositions(gameState, newParticle)
+          updatedParticle = util.sample(getPositionDistributionForGhost(tmpState, ghostIndex, self.ghostAgents[ghostIndex - 1]))
           newParticle.pop(ghostIndex - 1)
           newParticle.insert(ghostIndex - 1, updatedParticle)
           
