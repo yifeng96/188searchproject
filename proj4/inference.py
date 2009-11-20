@@ -103,11 +103,12 @@ class ExactInference(InferenceModule):
     pacmanPosition = gameState.getPacmanPosition()
     
     # Replace this code with a correct observation update
-    allPossible = util.Counter()
+    tmpBeliefs = util.Counter()
     for p in self.legalPositions:
       trueDistance = util.manhattanDistance(p, pacmanPosition)
-      self.beliefs[p] = self.beliefs[p] * emissionModel[trueDistance]
-    self.beliefs.normalize()
+      tmpBeliefs[p] = self.beliefs[p] * emissionModel[trueDistance]
+    tmpBeliefs.normalize()
+    self.beliefs = tmpBeliefs;
         
     
   def elapseTime(self, gameState):
