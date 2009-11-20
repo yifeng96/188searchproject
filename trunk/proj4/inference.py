@@ -160,9 +160,13 @@ class ParticleFilter(InferenceModule):
     self.particles = []
     self.beliefs = util.Counter()
     
+    probability = 1.0 / self.numParticles
     for i in range(self.numParticles):
-      self.particles.append(random.choice(self.legalPositions))
-    
+      randomParticle = random.choice(self.legalPositions)
+      self.particles.append(randomParticle)
+      self.beliefs[randomParticle] += probability
+    self.beliefs.normalize()
+     
 
   
   def observe(self, observation, gameState):
@@ -325,7 +329,7 @@ class JointParticleFilter:
             else:
               trueDist = util.manhattanDistance(pacmanPosition, particleArray[ghostIndex])
               weight = (float) (emissionModels[ghostIndex][trueDist])
-              particle_weights[ghostIndex] = weight
+              particle_weights[ghostIndex] += weight
           weightProduct = 1
           for particle in particle_weights:
             weightProduct *= particle_weights[particle]
