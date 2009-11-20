@@ -134,11 +134,10 @@ class ExactInference(InferenceModule):
     for legalPos in self.legalPositions:
       tmpState = self.setGhostPosition(gameState,legalPos)
       for pos in self.getPositionDistribution(tmpState):
-        ghostPositions[pos] += self.beliefs[pos] * self.getPositionDistribution(tmpState)[legalPos]
+        ghostPositions[pos] += self.beliefs[legalPos] * self.getPositionDistribution(tmpState)[pos]
       
-    for pos in ghostPositions:
-      self.beliefs[pos] = ghostPositions[pos]
-    self.beliefs.normalize()
+    ghostPositions.normalize();
+    self.beliefs = ghostPositions;
 
 
   def getBeliefDistribution(self):
