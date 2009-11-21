@@ -319,20 +319,21 @@ class JointParticleFilter:
     particleWeightsCounter = util.Counter()
     if (len(emissionModels) != 0):
       for particleArray in self.particles:
-          particleArray = list(particleArray)
+          particleArrayList = list(particleArray)
           particle_weights = util.Counter()
           for ghostIndex in range(self.numGhosts):
             if (noisyDistances[ghostIndex] == 999):
-              particleArray[ghostIndex] = (2 * (ghostIndex+1) - 1, 1)
+              particleArrayList[ghostIndex] = (2 * (ghostIndex+1) - 1, 1)
+              particle_weights[ghostIndex] = 1.0
             else:
-              trueDist = util.manhattanDistance(pacmanPosition, particleArray[ghostIndex])
+              trueDist = util.manhattanDistance(pacmanPosition, particleArrayList[ghostIndex])
               weight = (float) (emissionModels[ghostIndex][trueDist])
               particle_weights[ghostIndex] += weight
           weightProduct = 1
           for particle in particle_weights:
             weightProduct *= particle_weights[particle]
-          particleArray = tuple(particleArray)
-          particleWeightsCounter[particleArray] = weightProduct
+          particleArrayList = tuple(particleArrayList)
+          particleWeightsCounter[particleArrayList] = weightProduct + particleWeightsCounter[particleArrayList]
       
       if (sum(particleWeightsCounter.values()) == 0):
         self.initializeParticles()
