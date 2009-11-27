@@ -1,5 +1,0 @@
-from captureAgents import CaptureAgent
-
-class testAgent(CaptureAgent):
-    def chooseAction(self, gameState):
-        return "NORTH"
