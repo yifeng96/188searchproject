@@ -18,6 +18,8 @@ SONAR_NOISE_PROBS = [2 ** (SONAR_MAX-abs(v)) / SONAR_DENOMINATOR  for v in SONAR
 # FACTORIES #
 #############
 
+# A comment
+
 NUM_KEYBOARD_AGENTS = 0
 class MunchAgentFactory(AgentFactory):
   "Returns one keyboard agent and offensive reflex agents"
